@@ -26,7 +26,7 @@ public class RestUserController {
         }
 
         try {
-            userService.crateUser(userDto);
+            userService.createUser(userDto);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

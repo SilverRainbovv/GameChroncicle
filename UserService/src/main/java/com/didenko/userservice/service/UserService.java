@@ -17,7 +17,7 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
-    public User crateUser(UserCreateEditDto user) {
+    public User createUser(UserCreateEditDto user) {
 
         User userEntity = modelMapper.map(user, User.class);
         userEntity.setRole(Role.USER);
