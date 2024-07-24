@@ -9,22 +9,26 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class TwitchSetup {
+public class IgdbWrapperUtil {
 
     private String CLIENT_ID;
     private String CLIENT_SECRET;
     private String ACCESS_TOKEN;
     private final Environment env;
+    private IGDBWrapper wrapper;
 
     public IGDBWrapper getIGDBWrapper() {
-        if (CLIENT_ID == null || CLIENT_SECRET == null) {
-            initCredentials();
+        if (wrapper != null) {
+            return wrapper;
+        } else {
+            if (CLIENT_ID == null || CLIENT_SECRET == null) {
+                initCredentials();
+            }
+            wrapper = IGDBWrapper.INSTANCE;
+            wrapper.setCredentials(CLIENT_ID, ACCESS_TOKEN);
+
+            return wrapper;
         }
-
-        IGDBWrapper wrapper = IGDBWrapper.INSTANCE;
-        wrapper.setCredentials(CLIENT_ID, ACCESS_TOKEN);
-
-        return wrapper;
     }
 
     private void getTwitchToken() {
