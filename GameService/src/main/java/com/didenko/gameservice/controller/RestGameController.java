@@ -1,6 +1,5 @@
 package com.didenko.gameservice.controller;
 
-import com.didenko.gameservice.entity.GameListType;
 import com.didenko.gameservice.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,9 +22,9 @@ public class RestGameController {
     }
 
 
-    @PostMapping("/{igdbId}/wishlist")
-    public ResponseEntity<HttpStatus> addGameToWishlist(@PathVariable Long igdbId){
-        gameService.addGameToList(igdbId, GameListType.WISHLIST);
+    @PostMapping("/tolist")
+    public ResponseEntity<HttpStatus> addToList(@RequestBody AddToListParams params){
+        gameService.addGameToList(params);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -12,7 +12,7 @@ CREATE TABLE gamelist(
 --changeset didenko:2
 CREATE TABLE game(
     id BIGSERIAL PRIMARY KEY ,
-    igdb_id BIGINT NOT NULL
+    igdb_id BIGINT NOT NULL UNIQUE
 );
 
 --changeset didenko:3
@@ -21,3 +21,6 @@ CREATE TABLE gamelist_game(
     game_id BIGINT NOT NULL REFERENCES game(id),
     PRIMARY KEY (list_id, game_id)
 );
+
+-- TO REMOVE TEST PURPOSE ONLY
+INSERT INTO users (uuid, role, username, email, password) VALUES (1 , 'CLIENT', 'test', 'test@gmail.com', 'test123');
