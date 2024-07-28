@@ -27,7 +27,6 @@ import java.util.UUID;
 public class GameService {
 
     private final GameListRepository gameListRepository;
-    private final GameRepository gameService;
     private final IgdbWrapperUtil igdbWrapperUtil;
     private final GameRepository gameRepository;
     private IGDBWrapper igdbWrapper;

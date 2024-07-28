@@ -22,7 +22,7 @@ public class RestGameController {
     }
 
 
-    @PostMapping("/tolist")
+    @PostMapping("/toList")
     public ResponseEntity<HttpStatus> addToList(@RequestBody AddToListParams params){
         gameService.addGameToList(params);
         return new ResponseEntity<>(HttpStatus.OK);
