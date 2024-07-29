@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="/js/main.js" defer></script>
+    <title>My Media Chronicle</title>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="/img/logo-transparent.png">
+            </div>
+            <div class=" media-types">
+                <a class="media-type" href="/games">Search</a>
+                <a class="media-type" href="/video">Top 100</a>
+                <a class="media-type" href="/text">Recent Releases</a>
+            </div>
+            <div class="user-features">
+                <a href="/login">Login</a>
+                <a href="/register">Sign Up</a>
+            </div>
+        </div>
+    </div>
+    <form action="">
+        <div class="search-options">
+            <div class="search-option">
+                <div class="option-label">Search</div>
+                <div class="option-value" option>
+                    <input type="text" class="select-box">
+                </div>
+            </div>
+            <div class="search-option">
+                <div class="soption-label">Genre</div>
+                <div class="option-value" option>
+                    <select name="genre" id="genre-select-id" class="select-box"></select>
+                </div>
+            </div>
+            <div class="search-option">
+                <div class="option-label">Released After</div>
+                <div class="option-value" option>
+                    <select id="year-select-id" class="select-box"></select>
+                </div>
+            </div>
+            <div class="search-option">
+                <div class="option-label">Platform</div>
+                <div class="option-value" option>
+                    <select id="platform-select-id" class="select-box"></select>
+                </div>
+            </div>
+            <div class="search-option">
+                <div class="option-label">Sort By</div>
+                <div class="option-value" option>
+                    <select id="search-select-id" class="select-box"></select>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="main-content-area">
+        <div class="content-collection">
+            <div class="collection-header">
+                <div class="collection-label">COMMING SOON</div>
+                <div class="collection-view-all">VIEW MORE</div>
+            </div>
+            <div class="one-row-collection">
+                <div class="collection-element">
+                    <img src="/img/stalker.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name">STALKER 2</div>
+                    <div class="collection-element-release-date">20 November 2024</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/wu-kong.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name">Black Myth: Wukong</div>
+                    <div class="collection-element-release-date">20 August 2024</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/zelda.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name">The Legend of Zelda: Echoes of Wisdom</div>
+                    <div class="collection-element-release-date">26 September 2024</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/sh2.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name">Silent Hill 2</div>
+                    <div class="collection-element-release-date">10 August 2024</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/mars.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name">Mars</div>
+                    <div class="collection-element-release-date">10 August 2024</div>
+                </div>
+            </div>
+        </div>
+        <div class="content-collection">
+            <div class="collection-header">
+                <div class="collection-label">TRENDING NOW</div>
+                <div class="collection-view-all">VIEW MORE</div>
+            </div>
+            <div class="one-row-collection">
+                <div class="collection-element">
+                    <img src="/img/dave.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name-trending">Dave the Diver: Godzilla</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/cat.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name-trending">Little Kitty, Big City</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/elden.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name-trending">Elden Ring: Shadow of the Erdtree</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/waves.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name-trending">Wuthering Waves</div>
+                </div>
+                <div class="collection-element">
+                    <img src="/img/senua.png" alt="" class="collection-element-img">
+                    <div class="collection-element-name-trending">Senua's Saga: Hellblade II</div>
+                </div>
+            </div>
+        </div>
+        <div class="content-collection">
+            <div class="collection-header">
+                <div class="collection-label">BEST OF ALL TIME</div>
+                <div class="collection-view-all">VIEW MORE</div>
+            </div>
+            <div class="multi-row-collection" id="best-all-time-games">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
