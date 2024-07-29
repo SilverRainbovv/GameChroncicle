@@ -65,7 +65,6 @@ public class UtilService {
         }
     }
 
-
     private IGDBWrapper getWrapper() {
         if (igdbWrapper == null) {
             igdbWrapper = igdbWrapperUtil.getIGDBWrapper();
