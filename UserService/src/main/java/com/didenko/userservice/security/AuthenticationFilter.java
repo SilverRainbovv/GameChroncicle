@@ -6,6 +6,7 @@ import com.didenko.userservice.entity.User;
 import com.didenko.userservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 
@@ -62,9 +64,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         UserReadDto userReadDto = userService.getUserByUsername(username);
 
         //TODO set normal phrase
-        String secretPhrase = "TEMP_TEST_PHRASE";
-        byte[] secretBytes = secretPhrase.getBytes();
-        SecretKey secretKey = new SecretKeySpec(secretBytes, Jwts.SIG.HS512.getId());
+        String secretPhrase = "fiywgqrifgwqifgiqygrfiqgeifygqeirfgiqeoygroieqrgfiqgeigqeiorfygoqieryE123456789";
+        byte[] phraseBytes = secretPhrase.getBytes();
+
+        Key secretKey = Keys.hmacShaKeyFor(phraseBytes);
+
 
         String token = Jwts.builder()
                 .subject(userReadDto.getUUID())
