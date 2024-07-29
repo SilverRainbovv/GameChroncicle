@@ -1,0 +1,63 @@
+
+.header {
+    margin: 0;
+    padding: 0;
+    background-color: #152232;
+    width: 100%;
+}
+
+.header-content {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: 50px;
+    margin-right: 50px;
+    max-width: 1200px;
+    width: 100%;
+    height: 70px;
+}
+
+.logo img {
+    width: 300px;
+}
+
+.media-types {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 350px;
+    font-size: 1.1em;
+}
+
+.user-features {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 150px;
+    font-size: 1.3em;
+}
+
+a:link {
+     text-decoration: none; 
+     color: #a0b1c5;
+}
+a:visited {
+     text-decoration: none; 
+     color: #a0b1c5;
+}
+a:hover { 
+    text-decoration: none; 
+    color: #b8cde49a;
+}
+a:active {
+     text-decoration: none; 
+     color: #a0b1c5;
+}
+
+.media-type a {
+    color: #a0b1c5;
+    text-decoration: none;
+}
