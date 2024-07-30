@@ -1,4 +1,4 @@
-package com.didenko.gameservice;
+package com.didenko.gameservice.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

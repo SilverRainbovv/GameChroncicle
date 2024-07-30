@@ -1,7 +1,8 @@
 package com.didenko.gameservice.controller;
 
 import com.didenko.gameservice.dto.GameBestAllTimeDto;
-import com.didenko.gameservice.service.UtilService;
+import com.didenko.gameservice.dto.GameMostAnticipatedDto;
+import com.didenko.gameservice.service.GameDataProviderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,22 +22,27 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @RestController
-public class UtilRestController {
+public class GameDataProviderRestController {
 
-    private final UtilService utilService;
+    private final GameDataProviderService gameDataProviderService;
 
     @GetMapping("/platforms")
     public ResponseEntity<String> getPlatforms() {
-        String responseBody = utilService.getPlatformsList();
+        String responseBody = gameDataProviderService.getPlatformsList();
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
     @GetMapping("/games/best")
     public ResponseEntity<List<GameBestAllTimeDto>> getBestOfAllTime() {
-        List<GameBestAllTimeDto> gameList = utilService.getBestOfAllTime();
+        List<GameBestAllTimeDto> gameList = gameDataProviderService.getBestOfAllTime();
         Collections.shuffle(gameList);
         List<GameBestAllTimeDto> shuffledChunk = gameList.stream().limit(24).toList();
         return new ResponseEntity<>(shuffledChunk, HttpStatus.OK);
+    }
+
+    @GetMapping("/games/anticipated")
+    public List<GameMostAnticipatedDto> getMostAnticipatedGames() {
+        return gameDataProviderService.getMostAnticipatedGames();
     }
 
 }
