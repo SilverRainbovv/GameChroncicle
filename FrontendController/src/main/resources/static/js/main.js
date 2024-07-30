@@ -3,7 +3,8 @@ window.onload = async function () {
     initGenreSelect();
     initSortOptions();
     await initPlatfromSelect();
-    await getBestOfAllTime();
+    await initBestOfAllTime();
+    await initMostAnticipated();
 };
 
 function initSortOptions() {
@@ -24,8 +25,8 @@ async function initPlatfromSelect() {
     let platformSelect = document.getElementById("platform-select-id");
     let platforms;
     try {
-    platforms = await getPlatforms(); 
-    platforms.unshift("ANY");
+        platforms = await getPlatforms();
+        platforms.unshift("ANY");
     } catch(Error) {
         platforms = ["ANY", "PC", "Playstation 5", "XBOX Series", "Nintendo Switch"];
     }
@@ -80,9 +81,45 @@ async function getPlatforms() {
     }
 };
 
-async function getBestOfAllTime() {
+async function initMostAnticipated() {
+    const mostAnticipatedGamesCollection = document.getElementById('most-anticipated-games-collection')
 
-    const bestGamesCollection = document.getElementById("best-all-time-games");
+    try {
+        const response = await fetch("http://localhost:8080/api/v1/games/anticipated");
+
+        if (!response.ok) {
+            throw new Error(`Could not fetch resource: "http://localhost:8080/api/v1/games/best"`)
+        }
+
+        const data = await response.json();
+
+        let collectionRow;
+
+        collectionRow = createNewCollectionRow();
+
+        for(const game of data) {
+            let collectionRowElement = createNewCollectionRowElelment();
+            let elementImage = createElementImage(game.cover);
+            collectionRowElement.appendChild(elementImage);
+
+            let elementName = createElementName(game.name);
+            collectionRowElement.appendChild(elementName);
+
+            let elementReleaseDate = createElementReleaseDate(game.releaseDate);
+            collectionRowElement.appendChild(elementReleaseDate);
+
+            collectionRow.appendChild(collectionRowElement);
+        }
+        mostAnticipatedGamesCollection.appendChild(collectionRow);
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function initBestOfAllTime() {
+
+    const bestGamesCollection = document.getElementById("best-all-time-games")
 
     try{
         const response = await fetch("http://localhost:8080/api/v1/games/best")
@@ -96,11 +133,11 @@ async function getBestOfAllTime() {
         let collectionRow; rowElementsCounter = 0;
 
         collectionRow = createNewCollectionRow();
-       
+
         for(const game of data) {
             if(rowElementsCounter < 5) {
                 let collectionRowElement = createNewCollectionRowElelment();
-                
+
                 let elementImage = createElementImage(game.cover);
                 collectionRowElement.appendChild(elementImage);
 
@@ -134,6 +171,14 @@ function createElementName(name) {
     let elementNameContent = document.createTextNode(name);
     elementName.appendChild(elementNameContent);
     return elementName;
+}
+
+function createElementReleaseDate(releaseDate) {
+    let elementReleaseDate = document.createElement('div');
+    elementReleaseDate.setAttribute('class', 'collection-element-release-date');
+    let elementReleaseDateContent = document.createTextNode(releaseDate);
+    elementReleaseDate.appendChild(elementReleaseDateContent);
+    return elementReleaseDate;
 }
 
 function createNewCollectionRow() {

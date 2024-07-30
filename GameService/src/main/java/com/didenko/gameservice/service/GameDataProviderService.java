@@ -61,6 +61,7 @@ public class GameDataProviderService {
         }
     }
 
+    @Cacheable(value = "gamesMostAnticipated")
     public List<GameMostAnticipatedDto> getMostAnticipatedGames() {
         long currentTimeTimestamp = Instant.now().getEpochSecond();
         String query = IgdbQueries.GAMES_MOST_ANTICIPATED_QUERY.getQeury();
@@ -93,7 +94,7 @@ public class GameDataProviderService {
         } catch (RequestException | InvalidProtocolBufferException e) {
             throw new RuntimeException(e);
         }
-        return gameDtoList.stream().limit(15).toList();
+        return gameDtoList.stream().limit(5).toList();
     }
 
     private IGDBWrapper getWrapper() {
