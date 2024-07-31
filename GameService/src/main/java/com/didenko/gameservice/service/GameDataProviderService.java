@@ -4,6 +4,7 @@ import com.api.igdb.exceptions.RequestException;
 import com.api.igdb.request.IGDBWrapper;
 import com.api.igdb.utils.Endpoints;
 import com.didenko.gameservice.dto.GameMostAnticipatedDto;
+import com.didenko.gameservice.dto.GameTrendingDto;
 import com.didenko.gameservice.dto.ImageSize;
 import com.didenko.gameservice.dto.GameBestAllTimeDto;
 import com.didenko.gameservice.util.IgdbWrapperUtil;
@@ -17,6 +18,7 @@ import proto.GameResult;
 import proto.ReleaseDate;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -33,7 +35,7 @@ public class GameDataProviderService {
     @Cacheable(value = "platforms")
     public String getPlatformsList() {
         try {
-            return getWrapper().apiJsonRequest(Endpoints.PLATFORMS, IgdbQueries.POPULAR_PLATFORM_IDS.getQeury());
+            return getWrapper().apiJsonRequest(Endpoints.PLATFORMS, IgdbQueries.POPULAR_PLATFORM_IDS.getQuery());
         } catch (RequestException e) {
             throw new RuntimeException(e);
         }
@@ -42,8 +44,8 @@ public class GameDataProviderService {
     @Cacheable(value = "gamesBestOfAllTime")
     public List<GameBestAllTimeDto> getBestOfAllTime() {
         try {
-            byte[] gameBytes = getWrapper().apiProtoRequest(Endpoints.GAMES, IgdbQueries.GAMES_BEST_OF_ALL_TIME_QUERY.getQeury());
-            List<Game> gameList = GameResult.parseFrom(gameBytes).getGamesList();
+            byte[] gamesBytes = getWrapper().apiProtoRequest(Endpoints.GAMES, IgdbQueries.GAMES_BEST_OF_ALL_TIME_QUERY.getQuery());
+            List<Game> gameList = GameResult.parseFrom(gamesBytes).getGamesList();
             List<GameBestAllTimeDto> gameDtoList = new ArrayList<>();
             gameList.forEach(game -> {
 
@@ -61,25 +63,58 @@ public class GameDataProviderService {
         }
     }
 
+    @Cacheable(value = "gamesTrending")
+    public List<GameTrendingDto> getTrendingGames() {
+        long currentTimeTimestamp = Instant.now().getEpochSecond();
+        long halfYearBackTimestamp = Instant.now().minus(Duration.ofDays(6 * 30)).getEpochSecond();
+
+        String query = IgdbQueries.GAMES_TRENDING_NOW_QUERY.getQuery();
+        query = String.format(query, currentTimeTimestamp, halfYearBackTimestamp);
+
+        List<GameTrendingDto> gameTrendingDtoList = new ArrayList<>();
+
+        try {
+            byte[] gamesBytes = getWrapper().apiProtoRequest(Endpoints.GAMES, query);
+            List<Game> gameList = GameResult.parseFrom(gamesBytes).getGamesList();
+
+            gameList.forEach(game -> {
+                String convertedUrl = convertCoverUrl(game.getCover().getUrl(), ImageSize.HD);
+
+                Optional<Long> earliestReleaseDate = findEarliestReleaseDate(game);
+
+                if (earliestReleaseDate.isPresent() && earliestReleaseDate.get() > halfYearBackTimestamp) {
+                    gameTrendingDtoList.add(GameTrendingDto.builder()
+                            .id(game.getId())
+                            .cover(convertedUrl)
+                            .name(game.getName())
+                            .build());
+                }
+            });
+
+        } catch (RequestException | InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+        }
+        return gameTrendingDtoList.stream().limit(5).toList();
+    }
+
     @Cacheable(value = "gamesMostAnticipated")
     public List<GameMostAnticipatedDto> getMostAnticipatedGames() {
         long currentTimeTimestamp = Instant.now().getEpochSecond();
-        String query = IgdbQueries.GAMES_MOST_ANTICIPATED_QUERY.getQeury();
+
+        String query = IgdbQueries.GAMES_MOST_ANTICIPATED_QUERY.getQuery();
         query = String.format(query, currentTimeTimestamp);
+
         List<GameMostAnticipatedDto> gameDtoList = new ArrayList<>();
 
         try {
-            byte[] gameBytes = getWrapper().apiProtoRequest(Endpoints.GAMES, query);
-            List<Game> gameList = GameResult.parseFrom(gameBytes).getGamesList();
+            byte[] gamesBytes = getWrapper().apiProtoRequest(Endpoints.GAMES, query);
+            List<Game> gameList = GameResult.parseFrom(gamesBytes).getGamesList();
 
             gameList.forEach(game -> {
 
                 String convertedUrl = convertCoverUrl(game.getCover().getUrl(), ImageSize.HD);
 
-                Optional<Long> earliestReleaseDate = game.getReleaseDatesList().stream()
-                        .map(ReleaseDate::getDate)
-                        .map(Timestamp::getSeconds)
-                        .min(Long::compare);
+                Optional<Long> earliestReleaseDate = findEarliestReleaseDate(game);
 
                 if (earliestReleaseDate.isPresent() && earliestReleaseDate.get() > currentTimeTimestamp) {
                     String formattedReleaseDate = new SimpleDateFormat("dd MMM yyyy").format(earliestReleaseDate.get() * 1000);
@@ -107,5 +142,12 @@ public class GameDataProviderService {
     private String convertCoverUrl(String url, ImageSize size) {
         String coverUrl = url.replace("thumb", size.getSize());
         return String.format("https:%s", coverUrl);
+    }
+
+    private Optional<Long> findEarliestReleaseDate(Game game) {
+        return game.getReleaseDatesList().stream()
+                .map(ReleaseDate::getDate)
+                .map(Timestamp::getSeconds)
+                .min(Long::compare);
     }
 }

@@ -2,6 +2,7 @@ package com.didenko.gameservice.controller;
 
 import com.didenko.gameservice.dto.GameBestAllTimeDto;
 import com.didenko.gameservice.dto.GameMostAnticipatedDto;
+import com.didenko.gameservice.dto.GameTrendingDto;
 import com.didenko.gameservice.service.GameDataProviderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,11 @@ public class GameDataProviderRestController {
     @GetMapping("/games/anticipated")
     public List<GameMostAnticipatedDto> getMostAnticipatedGames() {
         return gameDataProviderService.getMostAnticipatedGames();
+    }
+
+    @GetMapping("/games/trending")
+    public List<GameTrendingDto> getTrendingGames() {
+        return gameDataProviderService.getTrendingGames();
     }
 
 }
