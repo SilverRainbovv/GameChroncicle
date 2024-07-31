@@ -3,8 +3,9 @@ window.onload = async function () {
     initGenreSelect();
     initSortOptions();
     await initPlatfromSelect();
-    await initBestOfAllTime();
     await initMostAnticipated();
+    await initTrending();
+    await initBestOfAllTime();
 };
 
 function initSortOptions() {
@@ -81,14 +82,48 @@ async function getPlatforms() {
     }
 };
 
+async function initTrending() {
+    const trendingGameCollection = document.getElementById('trending-games-collection')
+
+    try {
+        const response = await fetch("http://localhost:8080/api/v1/games/trending")
+
+        if (!response.ok) {
+            throw new Error(`Could not fetch resource: "http://localhost:8080/api/v1/games/trending"`)
+        }
+
+        const data = await response.json();
+
+        let collectionRow;
+
+        collectionRow = createNewCollectionRow();
+
+        for(const game of data) {
+            let collectionRowElement = createNewCollectionRowElelment();
+            let elementImage = createElementImage(game.cover);
+            collectionRowElement.appendChild(elementImage);
+
+            let elementName = createElementName(game.name);
+            collectionRowElement.appendChild(elementName);
+
+            collectionRow.appendChild(collectionRowElement);
+        }
+        trendingGameCollection.appendChild(collectionRow);
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
 async function initMostAnticipated() {
     const mostAnticipatedGamesCollection = document.getElementById('most-anticipated-games-collection')
 
     try {
-        const response = await fetch("http://localhost:8080/api/v1/games/anticipated");
+        const response = await fetch("http://localhost:8080/api/v1/games/anticipated")
 
         if (!response.ok) {
-            throw new Error(`Could not fetch resource: "http://localhost:8080/api/v1/games/best"`)
+            throw new Error(`Could not fetch resource: "http://localhost:8080/api/v1/games/anticipated"`)
         }
 
         const data = await response.json();
