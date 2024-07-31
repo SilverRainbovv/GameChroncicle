@@ -21,4 +21,4 @@ Docker(project will be containerized later)
 HTML, CSS, JS
 
 
-![screen](https://github.com/user-attachments/assets/8c5bcec0-a6fe-4f3a-9287-aa579ee68ce3
+![screen](https://github.com/user-attachments/assets/eacf9c00-b8e2-442d-8636-ebb2ac442c77)
