@@ -6,7 +6,7 @@ import com.didenko.userservice.entity.Role;
 import com.didenko.userservice.entity.User;
 import com.didenko.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,10 +21,21 @@ public class UserService implements UserDetailsService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
+    private final EmailValidator emailValidator;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
+        User user;
+        if (emailValidator.isValid(username)) {
+            user = userRepository.findByEmail(username);
+        } else {
+            user = userRepository.findByUsername(username);
+        }
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }   else {
+            return user;
+        }
     }
 
     public User createUser(UserCreateEditDto user) {
@@ -34,7 +45,7 @@ public class UserService implements UserDetailsService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
-                .role(Role.USER)
+                .role(Role.CLIENT)
                 .build();
 
         if (userRepository.findByUsername(userEntity.getUsername()) != null) {
@@ -53,7 +64,7 @@ public class UserService implements UserDetailsService {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .password(user.getPassword())
+                .role(user.getRole())
                 .build();
     }
-
 }

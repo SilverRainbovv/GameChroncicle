@@ -6,10 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -17,6 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestUserController {
 
     private final UserService userService;
+
+    @GetMapping("/status")
+    public String status() {
+        return HttpStatus.OK.toString();
+    }
+
+    @GetMapping("/wrong_creds")
+    public String wrongCreds() {
+        return HttpStatus.BAD_REQUEST.toString();
+    }
+
+    @GetMapping("/hello")
+    public String helloUser(Principal principal) {
+        return "Hello " + principal.getName();
+    }
 
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserCreateEditDto userDto, BindingResult bindingResult) {
@@ -30,8 +43,6 @@ public class RestUserController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
 }

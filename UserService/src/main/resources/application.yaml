@@ -6,3 +6,11 @@ spring:
     username: postgres
     password: newton123
     driver-class-name: org.postgresql.Driver
+#logging:
+#  level:
+#    org.springframework.security.web: trace
+token:
+  secret: dgjorufhrsnjdu438fkdj38fdmcv7dm3ckvhrsnjjuwelueivhe848fhedldh5ndk
+login:
+  url:
+    path: /users/login

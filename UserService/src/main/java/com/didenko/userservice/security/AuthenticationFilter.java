@@ -6,12 +6,11 @@ import com.didenko.userservice.entity.User;
 import com.didenko.userservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,15 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.security.Key;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 
-@RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-        private UserService userService;
-        private Environment env;
+    private final UserService userService;
+    private final Environment env;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager,
                                 UserService userService, Environment env) {
@@ -40,44 +39,42 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request,
-                                                HttpServletResponse response) throws AuthenticationException {
-
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
         try {
-            LoginDto loginCreds = new ObjectMapper()
-                    .readValue(request.getInputStream(), LoginDto.class);
+            LoginDto creds = new ObjectMapper().readValue(req.getInputStream(), LoginDto.class);
 
             return getAuthenticationManager().authenticate(
-                    new UsernamePasswordAuthenticationToken(loginCreds.username(), loginCreds.password()));
+                    new UsernamePasswordAuthenticationToken(creds.username(), creds.password(), new ArrayList<>())
+            );
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
         }
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                            FilterChain chain, Authentication authResult)
-            throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication auth) throws IOException, ServletException {
 
-        String username = ((User)authResult.getPrincipal()).getUsername();
-        UserReadDto userReadDto = userService.getUserByUsername(username);
+        String userName = ((User)auth.getPrincipal()).getUsername();
+        UserReadDto userDetails = userService.getUserByUsername(userName);
 
-        //TODO set normal phrase
-        String secretPhrase = "fiywgqrifgwqifgiqygrfiqgeifygqeirfgiqeoygroieqrgfiqgeigqeiorfygoqieryE123456789";
-        byte[] phraseBytes = secretPhrase.getBytes();
+        String token = generateToken(userDetails);
 
-        Key secretKey = Keys.hmacShaKeyFor(phraseBytes);
+        response.addHeader("token", token);
+        response.addHeader("userId", userDetails.getUUID());
+    }
 
+    private String generateToken(UserReadDto userDetails) {
+        String tokenSecret = env.getProperty("token.secret");
+        byte[] secretKeyBytes = Base64.getEncoder().encode(tokenSecret.getBytes());
+        SecretKey secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
+        Instant now = Instant.now();
 
-        String token = Jwts.builder()
-                .subject(userReadDto.getUUID())
-                .expiration(Date.from(Instant.now().plusMillis(3600000)))
-                .issuedAt(Date.from(Instant.now()))
-                .signWith(secretKey)
-                .compact();
-
-        response.addHeader("Authorization", "Bearer " + token);
-        response.addHeader("userId", userReadDto.getUUID());
+        return Jwts.builder().setSubject(userDetails.getUUID())
+                .setExpiration(Date.from(now.plusMillis(3600000L)))
+                .setIssuedAt(Date.from(now)).signWith(secretKey, SignatureAlgorithm.HS512).compact();
     }
 }

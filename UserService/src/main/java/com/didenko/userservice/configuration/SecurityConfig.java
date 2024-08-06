@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,28 +21,44 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    private final Environment env;
     private final UserService userService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final Environment env;
 
-    private static final String[] PERMIT_ALL = new String[]{"/users/login/**", "/users/**"};
+    private static final String[] PERMIT_ALL = {
+            "/users/**",
+            "/login/**",
+            "/token",
+            "/error/**", "/error",
+            "/users/status", "/users/wrong_creds"};
+    private static final String[] CLIENT_PERMIT = {"/users/hello"};
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
+        authenticationManagerBuilder.userDetailsService(userService)
+                .passwordEncoder(passwordEncoder);
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        return http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(PERMIT_ALL).permitAll())
+        AuthenticationFilter authenticationFilter =
+                new AuthenticationFilter(authenticationManager, userService, env);
+        authenticationFilter.setFilterProcessesUrl(env.getProperty("login.url.path"));
+
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> {
+                    auth
+                            .requestMatchers(PERMIT_ALL).permitAll()
+                            .requestMatchers(CLIENT_PERMIT).hasAuthority("CLIENT")
+                            .anyRequest().authenticated();
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilter(new AuthenticationFilter(authenticationManager, userService, env))
+                .addFilter(authenticationFilter)
                 .authenticationManager(authenticationManager)
-                .build();
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
+        return http.build();
     }
-
 }

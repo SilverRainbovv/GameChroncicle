@@ -1,5 +1,6 @@
 package com.didenko.userservice.dto;
 
+import com.didenko.userservice.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,4 +16,5 @@ public class UserReadDto {
     private String username;
     private String email;
     private String password;
+    private Role role;
 }

@@ -1,5 +1,6 @@
 package com.didenko.userservice;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,5 +22,10 @@ public class UserServiceApplication {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public EmailValidator emailValidator() {
+        return EmailValidator.getInstance();
     }
 }
