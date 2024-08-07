@@ -1,13 +1,13 @@
-package com.didenko.frontendcontroller;
+package com.didenko.viewservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FrontendServiceApplication {
+public class ViewServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(FrontendServiceApplication.class, args);
+        SpringApplication.run(ViewServiceApplication.class, args);
     }
 
 }
