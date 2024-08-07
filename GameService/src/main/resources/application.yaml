@@ -8,7 +8,3 @@ spring:
     username: postgres
     password: newton123
     driver-class-name: org.postgresql.Driver
-client-id:
-  ycitwazp68n31dwf4uzy5bb7q26btz
-client_secret:
-  dkq7jey9u6y0ztl773lbh8pmw3tezc
