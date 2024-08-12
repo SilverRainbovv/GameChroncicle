@@ -50,5 +50,4 @@ public class GameDataProviderRestController {
     public List<GameTrendingDto> getTrendingGames() {
         return gameDataProviderService.getTrendingGames();
     }
-
 }

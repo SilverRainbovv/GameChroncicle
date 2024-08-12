@@ -11,6 +11,26 @@ spring:
             - Method=GET
           filters:
             - RemoveRequestHeader=Cookie
+        - id: api-platforms-list
+          uri: lb://game-service
+          predicates:
+            - Path=/api/v1/platforms
+            - Method=GET
+        - id: api-best-games-list
+          uri: lb://game-service
+          predicates:
+            - Path=/api/v1/games/best
+            - Method=GET
+        - id: api-anticipated-games-list
+          uri: lb://game-service
+          predicates:
+            - Path=/api/v1/games/anticipated
+            - Method=GET
+        - id: api-trending-games-list
+          uri: lb://game-service
+          predicates:
+            - Path=/api/v1/games/trending
+            - Method=GET
 eureka:
   client:
     service-url:
