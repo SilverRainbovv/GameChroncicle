@@ -1,8 +1,14 @@
 spring:
   application:
-    name: DbService
+    name: db-service
   datasource:
     url: jdbc:postgresql://localhost:5432/GameChronicle
     username: postgres
     password: newton123
     driver-class-name: org.postgresql.Driver
+server:
+  port: 0
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8010/eureka

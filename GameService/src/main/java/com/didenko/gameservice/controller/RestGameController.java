@@ -9,15 +9,15 @@ import proto.Game;
 
 import java.util.List;
 
-@RequestMapping("/game")
+@RequestMapping("/games")
 @RequiredArgsConstructor
 @RestController
 public class RestGameController {
 
     private final GameService gameService;
 
-    @GetMapping("/status/health")
-    public ResponseEntity<List<Game>> checkHealth(){
+    @GetMapping("/status/check")
+    public ResponseEntity<HttpStatus> checkHealth(){
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
